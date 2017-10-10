@@ -1,34 +1,34 @@
 from unittest import TestCase, mock
 
-from usiq import tags
+from usiq import tagger
 
 
 class TestBpm2Str(TestCase):
 
     def test_int_should_remain(self):
-        self.assertEqual(tags.bpm2str(1), '1')
+        self.assertEqual(tagger.bpm2str(1), '1')
 
     def test_float_should_round_and_str(self):
-        self.assertEqual(tags.bpm2str(1.4), '1')
+        self.assertEqual(tagger.bpm2str(1.4), '1')
 
     def test_float_should_round_up(self):
-        self.assertEqual(tags.bpm2str(1.8), '2')
+        self.assertEqual(tagger.bpm2str(1.8), '2')
 
     def test_round_should_work_with_strings(self):
-        self.assertEqual(tags.bpm2str('1.4'), '1')
+        self.assertEqual(tagger.bpm2str('1.4'), '1')
 
     def test_round_should_work_with_strings_up(self):
-        self.assertEqual(tags.bpm2str('1.8'), '2')
+        self.assertEqual(tagger.bpm2str('1.8'), '2')
 
 
-class TestTags(TestCase):
+class TestTagger(TestCase):
 
     @mock.patch('mutagen.File')
     def test_save_saves_mutagen_tags(self, mock_file):
         mock_tags = mock.Mock()
         mock_file.return_value = mock_tags
 
-        t = tags.Tags('ANY_FILE')
+        t = tagger.Tagger('ANY_FILE')
         mock_file.assert_called_once_with('ANY_FILE')
 
         mock_tags.assert_not_called()
@@ -38,25 +38,25 @@ class TestTags(TestCase):
     @mock.patch('mutagen.File')
     def test_string_creation(self, mock_file):
 
-        class mockTags(tags.Tags):
+        class mockTagger(tagger.Tagger):
             __getitem__ = mock.Mock()
 
-        t = mockTags('ANY_FILE')
+        t = mockTagger('ANY_FILE')
         tstr = str(t)
 
         self.assertIn('{', tstr)
         self.assertIn('}', tstr)
 
         t.__getitem__.assert_has_calls(
-            [mock.call(key) for key in tags.FIELDS],
+            [mock.call(key) for key in tagger.FIELDS],
             any_order=True)
 
 
-class TestMp3Tags(TestCase):
+class TestMp3Tagger(TestCase):
 
     @mock.patch('mutagen.File')
     def test_getitem(self, mock_file):
-        t = tags.Mp3Tags('ANY_FILE')
+        t = tagger.Mp3Tagger('ANY_FILE')
         t['title']
         mock_tags = mock_file.return_value
         mock_tag = mock_tags.__getitem__.return_value
@@ -65,7 +65,7 @@ class TestMp3Tags(TestCase):
 
     @mock.patch('mutagen.File')
     def test_setitem(self, mock_file):
-        t = tags.Mp3Tags('ANY_FILE')
+        t = tagger.Mp3Tagger('ANY_FILE')
         t['title'] = 'ANY_TITLE'
         mock_tags = mock_file.return_value
         mock_tag = mock_tags.__getitem__.return_value
@@ -73,41 +73,41 @@ class TestMp3Tags(TestCase):
         self.assertSequenceEqual(mock_tag.text, ['ANY_TITLE'])
 
 
-class TestFlacTags(TestCase):
+class TestFlacTagger(TestCase):
 
     @mock.patch('mutagen.File')
     def test_getitem(self, mock_file):
-        t = tags.FlacTags('ANY_FILE')
+        t = tagger.FlacTagger('ANY_FILE')
         t['title']
         mock_tags = mock_file.return_value
         mock_tags['title'].__getitem__.assert_called_once_with(0)
 
     @mock.patch('mutagen.File')
     def test_setitem(self, mock_file):
-        t = tags.FlacTags('ANY_FILE')
+        t = tagger.FlacTagger('ANY_FILE')
         t['title'] = 'ANY_TITLE'
         mock_tags = mock_file.return_value
         mock_tags.__setitem__.assert_called_once_with('title', ['ANY_TITLE'])
 
 
-class TestGetTags(TestCase):
+class TestGetTagger(TestCase):
 
     @mock.patch('mutagen.File')
     def test_returns_mp3_tags_for_mp3(self, mock_file):
-        t = tags.get_tags('ANY_FILE.mp3')
-        self.assertIsInstance(t, tags.Mp3Tags)
+        t = tagger.get_tagger('ANY_FILE.mp3')
+        self.assertIsInstance(t, tagger.Mp3Tagger)
 
     @mock.patch('mutagen.File')
     def test_returns_flac_tags_for_flac(self, mock_file):
-        t = tags.get_tags('ANY_FILE.flac')
-        self.assertIsInstance(t, tags.FlacTags)
+        t = tagger.get_tagger('ANY_FILE.flac')
+        self.assertIsInstance(t, tagger.FlacTagger)
 
     @mock.patch('mutagen.File')
     def test_is_case_insensitive(self, mock_file):
-        t = tags.get_tags('ANY_FILE.FlAc')
-        self.assertIsInstance(t, tags.FlacTags)
+        t = tagger.get_tagger('ANY_FILE.FlAc')
+        self.assertIsInstance(t, tagger.FlacTagger)
 
     @mock.patch('mutagen.File')
     def test_raises_notaggererror_for_unknown_type(self, mock_file):
-        with self.assertRaises(tags.NoTaggerError):
-            tags.get_tags('ANY_FILE')
+        with self.assertRaises(tagger.NoTaggerError):
+            tagger.get_tagger('ANY_FILE')

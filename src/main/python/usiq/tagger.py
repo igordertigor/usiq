@@ -16,7 +16,7 @@ class NoTaggerError(Exception):
     pass
 
 
-class Tags(object):
+class Tagger(object):
 
     def __init__(self, fname):
         self.tags = mutagen.File(fname)
@@ -34,7 +34,7 @@ class Tags(object):
         return str({key: self[key] for key in FIELDS})
 
 
-class Mp3Tags(Tags):
+class Mp3Tagger(Tagger):
 
     supported_extensions = ('.mp3',)
 
@@ -57,7 +57,7 @@ class Mp3Tags(Tags):
         return d[key]
 
 
-class FlacTags(Tags):
+class FlacTagger(Tagger):
 
     supported_extensions = ('.flac', '.ogg')
 
@@ -68,10 +68,10 @@ class FlacTags(Tags):
         self.tags[key] = [value]
 
 
-def get_tags(fname):
+def get_tagger(fname):
     basename, extension = os.path.splitext(fname)
     tagger = [tagr
-              for tagr in Tags.__subclasses__()
+              for tagr in Tagger.__subclasses__()
               if extension.lower() in tagr.supported_extensions]
     if len(tagger):
         return tagger[0](fname)
@@ -82,3 +82,7 @@ def get_tags(fname):
 
 def bpm2str(value):
     return str(int(round(float(value))))
+
+
+def set_multiple_tags(fname, tags):
+    pass
