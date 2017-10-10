@@ -1,3 +1,4 @@
+import os
 import mutagen
 
 
@@ -9,6 +10,10 @@ FIELDS = ('title',
           'bpm',
           'key',
           'year')
+
+
+class NoTaggerError(Exception):
+    pass
 
 
 class Tags(object):
@@ -31,6 +36,8 @@ class Tags(object):
 
 class Mp3Tags(Tags):
 
+    supported_extensions = ('.mp3',)
+
     def __getitem__(self, key):
         return self.tags[self.translate_key(key)].text[0]
 
@@ -52,11 +59,25 @@ class Mp3Tags(Tags):
 
 class FlacTags(Tags):
 
+    supported_extensions = ('.flac', '.ogg')
+
     def __getitem__(self, key):
         return self.tags[key][0]
 
     def __setitem__(self, key, value):
         self.tags[key] = [value]
+
+
+def get_tags(fname):
+    basename, extension = os.path.splitext(fname)
+    tagger = [tagr
+              for tagr in Tags.__subclasses__()
+              if extension.lower() in tagr.supported_extensions]
+    if len(tagger):
+        return tagger[0](fname)
+    else:
+        raise NoTaggerError('Could not find tagger for extension {}'
+                            .format(extension))
 
 
 def bpm2str(value):

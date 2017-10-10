@@ -88,3 +88,26 @@ class TestFlacTags(TestCase):
         t['title'] = 'ANY_TITLE'
         mock_tags = mock_file.return_value
         mock_tags.__setitem__.assert_called_once_with('title', ['ANY_TITLE'])
+
+
+class TestGetTags(TestCase):
+
+    @mock.patch('mutagen.File')
+    def test_returns_mp3_tags_for_mp3(self, mock_file):
+        t = tags.get_tags('ANY_FILE.mp3')
+        self.assertIsInstance(t, tags.Mp3Tags)
+
+    @mock.patch('mutagen.File')
+    def test_returns_flac_tags_for_flac(self, mock_file):
+        t = tags.get_tags('ANY_FILE.flac')
+        self.assertIsInstance(t, tags.FlacTags)
+
+    @mock.patch('mutagen.File')
+    def test_is_case_insensitive(self, mock_file):
+        t = tags.get_tags('ANY_FILE.FlAc')
+        self.assertIsInstance(t, tags.FlacTags)
+
+    @mock.patch('mutagen.File')
+    def test_raises_notaggererror_for_unknown_type(self, mock_file):
+        with self.assertRaises(tags.NoTaggerError):
+            tags.get_tags('ANY_FILE')
