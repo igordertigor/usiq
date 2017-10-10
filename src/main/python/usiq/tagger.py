@@ -84,5 +84,10 @@ def bpm2str(value):
     return str(int(round(float(value))))
 
 
-def set_multiple_tags(fname, tags):
-    pass
+def set_multiple_tags(fname, tags, prefix=''):
+    tagger = get_tagger(fname)
+    for key in FIELDS:
+        value = tags[prefix + key]
+        if value is not None:
+            tagger[key] = value
+    tagger.save()
