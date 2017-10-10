@@ -6,8 +6,11 @@ from .tagger import FIELDS
 
 def parse_filename(fname, pattern):
     basename, _ = os.path.splitext(os.path.abspath(fname))
-    title = basename.replace('_', ' ')
-    return {'title': title}
+    regexp = construct_regexp(pattern)
+    parsed = re.search(regexp, basename).groupdict()
+    for key in parsed:
+        parsed[key] = parsed[key].replace('_', ' ')
+    return parsed
 
 
 def construct_regexp(pattern):
@@ -17,7 +20,7 @@ def construct_regexp(pattern):
     complex_fields = number_fields | {'key'}
     simple_fields = list(fields - complex_fields)
     regexp = re.sub(r'<({})>'.format('|'.join(simple_fields)),
-                    r'(?P<\1>.+)',
+                    r'(?P<\1>[^/]+)',
                     regexp)
     for field in number_fields:
         if field in fields:
