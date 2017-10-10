@@ -1,6 +1,16 @@
 import mutagen
 
 
+FIELDS = ('title',
+          'artist',
+          'album',
+          'genre',
+          'albumartist',
+          'bpm',
+          'key',
+          'year')
+
+
 class Tags(object):
 
     def __init__(self, fname):
@@ -16,14 +26,7 @@ class Tags(object):
         raise NotImplementedError
 
     def __str__(self):
-        return str({key: self[key]
-                    for key in ['title',
-                                'artist',
-                                'album',
-                                'genre',
-                                'albumartist',
-                                'bpm',
-                                'key']})
+        return str({key: self[key] for key in FIELDS})
 
 
 class Mp3Tags(Tags):

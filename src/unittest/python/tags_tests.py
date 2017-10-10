@@ -47,15 +47,9 @@ class TestTags(TestCase):
         self.assertIn('{', tstr)
         self.assertIn('}', tstr)
 
-        t.__getitem__.assert_has_calls([mock.call(key)
-                                        for key in ['title',
-                                                    'artist',
-                                                    'album',
-                                                    'genre',
-                                                    'bpm',
-                                                    'albumartist',
-                                                    'key']],
-                                       any_order=True)
+        t.__getitem__.assert_has_calls(
+            [mock.call(key) for key in tags.FIELDS],
+            any_order=True)
 
 
 class TestMp3Tags(TestCase):
