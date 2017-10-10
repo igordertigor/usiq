@@ -17,14 +17,14 @@ def construct_regexp(pattern):
     complex_fields = number_fields | {'key'}
     simple_fields = list(fields - complex_fields)
     regexp = re.sub(r'<({})>'.format('|'.join(simple_fields)),
-                    r'(P<\1>.+)',
+                    r'(?P<\1>.+)',
                     regexp)
     for field in number_fields:
         if field in fields:
             regexp = re.sub(r'<{}>'.format(field),
-                            r'(P<{}>\d+)'.format(field),
+                            r'(?P<{}>\d+)'.format(field),
                             regexp)
 
     if 'key' in fields:
-        regexp = re.sub(r'<key>', r'(P<key>\d+[ABab])', regexp)
+        regexp = re.sub(r'<key>', r'(?P<key>\d+[ABab])', regexp)
     return regexp + '$'
