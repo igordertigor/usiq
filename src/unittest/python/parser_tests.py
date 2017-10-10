@@ -25,3 +25,11 @@ class TestConstructRegexp(TestCase):
     def test_bpm_is_digits(self):
         regexp = parser.construct_regexp('<title>_(<bpm>BPM)')
         self.assertEqual(regexp, r'(P<title>.+)_\((P<bpm>\d+)BPM\)$')
+
+    def test_album_artist_album_artist_title(self):
+        regexp = parser.construct_regexp(
+            '<albumartist>/<album>/<artist>_-_<title>_(<bpm>BPM).flac')
+        self.assertEqual(
+            regexp,
+            r'(P<albumartist>.+)/(P<album>.+)/'
+            r'(P<artist>.+)_-_(P<title>.+)_\((P<bpm>\d+)BPM\).flac$')

@@ -1,6 +1,8 @@
 import re
 import os
 
+from .tagger import FIELDS
+
 
 def parse_filename(fname, pattern):
     basename, _ = os.path.splitext(os.path.abspath(fname))
@@ -9,10 +11,12 @@ def parse_filename(fname, pattern):
 
 
 def construct_regexp(pattern):
-    fields = re.findall(r'<(.*?)>', pattern)
+    fields = set(re.findall(r'<(.*?)>', pattern)).intersection(set(FIELDS))
     regexp = pattern.replace('(', r'\(').replace(')', r'\)')
-    regexp = re.sub(r'<(artist|title)>', r'(P<\1>.+)', regexp)
-    # TODO: other keys
+    simple_fields = list(fields - {'bpm', 'key'})
+    regexp = re.sub(r'<({})>'.format('|'.join(simple_fields)),
+                    r'(P<\1>.+)',
+                    regexp)
     if 'bpm' in fields:
         regexp = re.sub(r'<bpm>', r'(P<bpm>\d+)', regexp)
     # TODO: InitialKey
