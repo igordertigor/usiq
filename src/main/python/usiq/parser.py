@@ -19,5 +19,8 @@ def construct_regexp(pattern):
                     regexp)
     if 'bpm' in fields:
         regexp = re.sub(r'<bpm>', r'(P<bpm>\d+)', regexp)
+
+    if 'key' in fields:
+        regexp = re.sub(r'<key>', r'(P<key>\d+[ABab])', regexp)
     # TODO: InitialKey
     return regexp + '$'

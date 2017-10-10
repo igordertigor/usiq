@@ -33,3 +33,7 @@ class TestConstructRegexp(TestCase):
             regexp,
             r'(P<albumartist>.+)/(P<album>.+)/'
             r'(P<artist>.+)_-_(P<title>.+)_\((P<bpm>\d+)BPM\).flac$')
+
+    def test_title_and_key(self):
+        regexp = parser.construct_regexp('<title>_(<key>).mp3')
+        self.assertEqual(regexp, r'(P<title>.+)_\((P<key>\d+[ABab])\).mp3$')
