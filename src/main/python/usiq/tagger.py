@@ -9,6 +9,7 @@ FIELDS = ('title',
           'albumartist',
           'bpm',
           'key',
+          'tracknumber',
           'year')
 
 
@@ -52,6 +53,8 @@ class Mp3Tagger(Tagger):
              'genre': 'TCON',
              'albumartist': 'TPE2',
              'bpm': 'TBPM',
+             'tracknumber': 'TRCK',
+             'year': 'TYER',
              'key': 'TKEY',
              }
         return d[key]

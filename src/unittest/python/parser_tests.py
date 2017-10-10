@@ -37,3 +37,10 @@ class TestConstructRegexp(TestCase):
     def test_title_and_key(self):
         regexp = parser.construct_regexp('<title>_(<key>).mp3')
         self.assertEqual(regexp, r'(P<title>.+)_\((P<key>\d+[ABab])\).mp3$')
+
+    def test_year_title_key(self):
+        regexp = parser.construct_regexp(
+            '<year>/<tracknumber>_<title>_(<key>).mp3')
+        self.assertEqual(regexp,
+                         r'(P<year>\d+)/(P<tracknumber>\d+)_(P<title>.+)'
+                         '_\((P<key>\d+[ABab])\).mp3$')
