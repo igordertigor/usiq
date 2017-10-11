@@ -14,7 +14,7 @@ def parse_filename(fname, pattern):
 
 
 def construct_regexp(pattern):
-    fields = set(re.findall(r'<(.*?)>', pattern)).intersection(set(FIELDS))
+    fields = get_fields(pattern)
     regexp = pattern.replace('(', r'\(').replace(')', r'\)')
     number_fields = {'bpm', 'year', 'tracknumber'}
     complex_fields = number_fields | {'key'}
@@ -31,3 +31,7 @@ def construct_regexp(pattern):
     if 'key' in fields:
         regexp = re.sub(r'<key>', r'(?P<key>\d+[ABab])', regexp)
     return regexp + '$'
+
+
+def get_fields(pattern):
+    return set(re.findall(r'<(.*?)>', pattern)).intersection(set(FIELDS))
