@@ -120,4 +120,45 @@ class TestTag(TestCase):
             self.assertIn(should_log, log_handler.formatted_records[0])
 
 
-# Test rename:
+class TestRename(TestCase):
+
+    def setUp(self):
+        self.patch_rename = mock.patch('os.rename')
+        self.patch_get_tagger = mock.patch('usiq.tagger.get_tagger')
+        self.mock_rename = self.patch_rename.start()
+        self.mock_get_tagger = self.patch_get_tagger.start()
+        self.mock_get_tagger.return_value = {'artist': 'ANY_ARTIST',
+                                             'title': 'ANY_TITLE',
+                                             'bpm': '101'}
+
+    def tearDown(self):
+        mock.patch.stopall()
+
+    def test_operates_on_all_filenames(self):
+        cli.rename(['FIRST_FILE.mp3', 'SECOND_FILE.flac'],
+                   {'--dry': False, '--pattern': '<artist>'})
+        self.mock_rename.assert_has_calls(
+            [mock.call('FIRST_FILE.mp3', 'ANY_ARTIST.mp3'),
+             mock.call('SECOND_FILE.flac', 'ANY_ARTIST.flac')],
+            any_order=True)
+
+    def test_does_not_accept_empty_patterns(self):
+        pass
+
+    def test_does_not_accept_constant_patterns(self):
+        pass
+
+    def test_honors_dry_run(self):
+        pass
+
+    def test_logs_if_dry_run(self):
+        pass
+
+    def test_logs_if_wet_run(self):
+        pass
+
+    def test_adds_file_extension_to_pattern(self):
+        pass
+
+    def test_cancels_if_pattern_has_extension(self):
+        pass
