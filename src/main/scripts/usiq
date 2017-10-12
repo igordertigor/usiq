@@ -3,13 +3,15 @@
 Usage:
     usiq [options] show <FILE>
     usiq [options] tag <FILE> ...
+    usiq [options] rename <FILE> ...
+    usiq [options] export <FILE> ...
 
 Options:
     -d, --dry
         don't actually modify anything
     -p <PATTERN>, --pattern=<PATTERN>
         filename pattern used to parse tags from filenames
-    -s <SINGLETON>, --singleton=<SINGLETON>
+    -o <FILE>, --output=<FILE>
 Tag related:
     -t <TITLE>, --title=<TITLE>
     -a <ARTIST>, --artist=<ARTIST>
@@ -18,6 +20,7 @@ Tag related:
     -b <BPM>, --bpm=<BPM>
     -k <KEY>, --key=<KEY>
     -g <GENRE>, --genre=<GENRE>
+    -y <YEAR>, --year=<YEAR>
 """
 import sys
 from docopt import docopt
@@ -40,3 +43,5 @@ if __name__ == '__main__':
         cli.tag(fnames, args)
     elif args['rename']:
         cli.rename(fnames, args)
+    elif args['export']:
+        cli.export(fnames, args)

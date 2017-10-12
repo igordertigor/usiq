@@ -1,4 +1,6 @@
 from unittest import TestCase, mock
+from io import StringIO
+import yaml
 
 import logbook
 
@@ -181,3 +183,31 @@ class TestRename(TestCase):
         with self.assertRaises(cli.UsiqError):
             cli.rename(['ANY_FILE.mp3'],
                        {'--dry': False, '--pattern': '<artist>.mp3'})
+
+
+class TestExport(TestCase):
+
+    @mock.patch('os.path.abspath', side_effect=lambda fn: '/abs/' + fn)
+    @mock.patch('usiq.cli.open')
+    @mock.patch('usiq.tagger.get_tagger')
+    def test_happy_path(self, mock_get_tagger, mock_open, mock_abspath):
+        fake_open_file = StringIO()
+        mock_open.return_value.__enter__.return_value = fake_open_file
+
+        mock_get_tagger.return_value.todict.side_effect = [
+            {'artist': 'FIRST'},
+            {'artist': 'SECOND'},
+        ]
+
+        cli.export(['FIRST_FILE.mp3', 'SECOND_FILE.flac'],
+                   {'--output': 'out.yaml'})
+
+        mock_open.assert_called_once_with('out.yaml', 'w')
+        fake_open_file.seek(0)
+        recovered_yaml = yaml.load(fake_open_file.read())
+        self.assertDictEqual(recovered_yaml,
+                             {'/abs/FIRST_FILE.mp3': {'artist': 'FIRST'},
+                              '/abs/SECOND_FILE.flac': {'artist': 'SECOND'}})
+        mock_abspath.assert_has_calls([mock.call('FIRST_FILE.mp3'),
+                                       mock.call('SECOND_FILE.flac')],
+                                      any_order=True)

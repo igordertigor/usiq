@@ -1,4 +1,5 @@
 import os
+import yaml
 from logbook import info
 
 from usiq import tagger, parser, renamer
@@ -37,6 +38,15 @@ def rename(fnames, args):
         info('Moving {} -> {}'.format(fname, new_fname))
         if not args['--dry']:
             os.rename(fname, new_fname)
+
+
+def export(fnames, args):
+    outfile = args['--output']
+    with open(outfile, 'w') as f:
+        yaml.dump({os.path.abspath(fname): tagger.get_tagger(fname).todict()
+                   for fname in fnames},
+                  f,
+                  default_flow_style=False)
 
 
 def illegal_pattern(pattern):

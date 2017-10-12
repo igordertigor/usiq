@@ -33,7 +33,10 @@ class Tagger(object):
         raise NotImplementedError
 
     def __str__(self):
-        return str({key: self[key] for key in FIELDS})
+        return str(self.todict())
+
+    def todict(self):
+        return {key: self[key] for key in FIELDS}
 
 
 class Mp3Tagger(Tagger):

@@ -19,3 +19,4 @@ def set_properties(project):
     project.depends_on('docopt')
     project.depends_on('mutagen')
     project.depends_on('logbook')
+    project.depends_on('pyyaml')
