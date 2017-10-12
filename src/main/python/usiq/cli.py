@@ -1,10 +1,7 @@
 import os
-import sys
-from logbook import StreamHandler, info
+from logbook import info
 
 from usiq import tagger, parser, renamer
-
-StreamHandler(sys.stdout).push_application()
 
 
 def show(fname):

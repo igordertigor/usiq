@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+"""
+Usage:
+    usiq [options] show <FILE>
+    usiq [options] tag <FILE> ...
+
+Options:
+    -d, --dry
+        don't actually modify anything
+    -p <PATTERN>, --pattern=<PATTERN>
+        filename pattern used to parse tags from filenames
+    -s <SINGLETON>, --singleton=<SINGLETON>
+Tag related:
+    -t <TITLE>, --title=<TITLE>
+    -a <ARTIST>, --artist=<ARTIST>
+    -l <ALBUM>, --album=<ALBUM>
+    -A <ALBUMARTIST>, --albumartist=<ALBUMARTIST>
+    -b <BPM>, --bpm=<BPM>
+    -k <KEY>, --key=<KEY>
+    -g <GENRE>, --genre=<GENRE>
+"""
+
+# TODO: support singleton pattern to not clear album name
+
+imort sys
+from docopt import docopt
+from logbook import StreamHandler
+
+from usiq import cli
+
+if __name__ == '__main__':
+    StreamHandler(sys.stdout).push_application()
+    args = docopt(__doc__)
+
+    fnames = args.pop('<FILE>')
+    if args['show']:
+        cli.show(fnames.pop(0))
+    elif args['tag']:
+        cli.tag(fnames, args)
+    elif args['rename']:
+        cli.rename(fnames, args)
