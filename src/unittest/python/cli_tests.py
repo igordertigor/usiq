@@ -142,23 +142,42 @@ class TestRename(TestCase):
              mock.call('SECOND_FILE.flac', 'ANY_ARTIST.flac')],
             any_order=True)
 
-    def test_does_not_accept_empty_patterns(self):
-        pass
+    def test_fails_for_empty_patterns(self):
+        with self.assertRaises(cli.UsiqError):
+            cli.rename(['ANY_FILE.mp3'],
+                       {'--dry': False, '--pattern': ''})
 
-    def test_does_not_accept_constant_patterns(self):
-        pass
+    def test_fails_for_constant_patterns(self):
+        with self.assertRaises(cli.UsiqError):
+            cli.rename(['ANY_FILE.mp3'],
+                       {'--dry': False, '--pattern': 'CONSTANT_PATTERN'})
 
     def test_honors_dry_run(self):
-        pass
+        cli.rename(['ANY_FILE.mp3'],
+                   {'--dry': True, '--pattern': '<artist>'})
+        self.mock_rename.assert_not_called()
 
     def test_logs_if_dry_run(self):
-        pass
+        with logbook.TestHandler() as log_handler:
+            cli.rename(['ANY_FILE.mp3'],
+                       {'--dry': True, '--pattern': '<artist>'})
+            should_log = "Moving ANY_FILE.mp3 -> ANY_ARTIST.mp3"
+            self.assertIn(should_log, log_handler.formatted_records[0])
 
     def test_logs_if_wet_run(self):
-        pass
+        with logbook.TestHandler() as log_handler:
+            cli.rename(['ANY_FILE.mp3'],
+                       {'--dry': False, '--pattern': '<artist>'})
+            should_log = "Moving ANY_FILE.mp3 -> ANY_ARTIST.mp3"
+            self.assertIn(should_log, log_handler.formatted_records[0])
 
     def test_adds_file_extension_to_pattern(self):
-        pass
+        cli.rename(['ANY_FILE.ANY_EXTENSION'],
+                   {'--dry': False, '--pattern': '<artist>'})
+        self.mock_rename.assert_called_once_with('ANY_FILE.ANY_EXTENSION',
+                                                 'ANY_ARTIST.ANY_EXTENSION')
 
-    def test_cancels_if_pattern_has_extension(self):
-        pass
+    def test_fails_if_pattern_has_extension(self):
+        with self.assertRaises(cli.UsiqError):
+            cli.rename(['ANY_FILE.mp3'],
+                       {'--dry': False, '--pattern': '<artist>.mp3'})
