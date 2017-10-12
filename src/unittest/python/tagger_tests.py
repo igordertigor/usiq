@@ -1,4 +1,5 @@
 from unittest import TestCase, mock
+import logbook
 
 from usiq import tagger
 
@@ -90,6 +91,59 @@ class TestFlacTagger(TestCase):
         mock_tags.__setitem__.assert_called_once_with('title', ['ANY_TITLE'])
 
 
+class TestM4aTagger(TestCase):
+
+    def setUp(self):
+        self.patch_mutagen = mock.patch('mutagen.File')
+        self.mock_mutagen = self.patch_mutagen.start()
+
+    def tearDown(self):
+        mock.patch.stopall()
+
+    def test_getitem(self):
+        t = tagger.M4aTagger('ANY_FILE')
+        t['title']
+        mock_tags = self.mock_mutagen.return_value
+        mock_tag = mock_tags.__getitem__.return_value
+        mock_tags.__getitem__.assert_called_once_with('\xa9nam')
+        mock_tag.__getitem__.assert_called_once_with(0)
+
+    def test_setitem(self):
+        t = tagger.M4aTagger('ANY_FILE')
+        t['title'] = 'ANY_TITLE'
+        mock_tags = self.mock_mutagen.return_value
+        mock_tags.__setitem__.assert_called_once_with('\xa9nam', ['ANY_TITLE'])
+
+    def test_special_handling_when_getting_tracknumber(self):
+        mock_tags = self.mock_mutagen.return_value
+        mock_tags.__getitem__.return_value.__getitem__.return_value = (5, 10)
+        t = tagger.M4aTagger('ANY_FILE')
+        trackno = t['tracknumber']
+        self.assertEqual(trackno, '5')
+
+    def test_special_handling_when_setting_tracknumber(self):
+        mock_tags = self.mock_mutagen.return_value
+        mock_tags.__getitem__.return_value.__getitem__.return_value = (5, 10)
+        t = tagger.M4aTagger('ANY_FILE')
+        t['tracknumber'] = '6'
+        mock_tags.__getitem__.return_value.__setitem__.assert_called_once_with(
+            0, (6, 10))
+
+    def test_warning_when_getting_key(self):
+        with logbook.TestHandler() as log_handler:
+            t = tagger.M4aTagger('ANY_FILE')
+            t['key']
+            assert log_handler.has_warning(
+                'Keys are not supported for M4A files')
+
+    def test_warning_when_setting_key(self):
+        with logbook.TestHandler() as log_handler:
+            t = tagger.M4aTagger('ANY_FILE')
+            t['key'] = 'a4'
+            assert log_handler.has_warning(
+                'Keys are not supported for M4A files')
+
+
 class TestGetTagger(TestCase):
 
     @mock.patch('mutagen.File')
@@ -101,6 +155,11 @@ class TestGetTagger(TestCase):
     def test_returns_flac_tags_for_flac(self, mock_file):
         t = tagger.get_tagger('ANY_FILE.flac')
         self.assertIsInstance(t, tagger.FlacTagger)
+
+    @mock.patch('mutagen.File')
+    def test_returns_m4a_tags_for_m4a(self, mock_file):
+        t = tagger.get_tagger('ANY_FILE.m4a')
+        self.assertIsInstance(t, tagger.M4aTagger)
 
     @mock.patch('mutagen.File')
     def test_is_case_insensitive(self, mock_file):

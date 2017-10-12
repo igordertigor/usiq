@@ -1,5 +1,6 @@
 import os
 import mutagen
+from logbook import warn
 
 
 FIELDS = ('title',
@@ -69,6 +70,43 @@ class FlacTagger(Tagger):
 
     def __setitem__(self, key, value):
         self.tags[key] = [value]
+
+
+class M4aTagger(Tagger):
+
+    supported_extensions = ('.m4a',)
+
+    def __getitem__(self, key):
+        if key == 'tracknumber':
+            return str(self.tags['trkn'][0][0])
+        elif key == 'key':
+            warn('Keys are not supported for M4A files')
+            return ''
+        return self.tags[self.translate_key(key)][0]
+
+    def __setitem__(self, key, value):
+        if key == 'tracknumber':
+            k, n = self.tags['trkn'][0]
+            self.tags['trkn'][0] = (int(value), n)
+        elif key == 'key':
+            warn('Keys are not supported for M4A files')
+            pass
+        else:
+            self.tags[self.translate_key(key)] = [value]
+
+    def translate_key(self, key):
+        self.d = {'title': '\xa9nam',
+                  'artist': '\xa9ART',
+                  'album': '\xa9alb',
+                  'genre': '\xa9gen',
+                  'albumartist': 'aART',
+                  'bpm': 'tmpo',
+                  'year': '\xa9day',
+                  }
+        if key == 'key' and key not in self.d:
+            candidates = [key for key in self.tags if 'initialkey' in key]
+            self.d['key'] = candidates[0]
+        return self.d[key]
 
 
 def get_tagger(fname):

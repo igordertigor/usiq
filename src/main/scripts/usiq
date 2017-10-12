@@ -19,14 +19,15 @@ Tag related:
     -k <KEY>, --key=<KEY>
     -g <GENRE>, --genre=<GENRE>
 """
-
-# TODO: support singleton pattern to not clear album name
-
-imort sys
+import sys
 from docopt import docopt
 from logbook import StreamHandler
 
 from usiq import cli
+
+# TODO: support singleton pattern to not clear album name
+# TODO: write tags as yaml, edit, read tags from yaml
+
 
 if __name__ == '__main__':
     StreamHandler(sys.stdout).push_application()
