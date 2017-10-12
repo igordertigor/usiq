@@ -111,3 +111,45 @@ class TestGetTagger(TestCase):
     def test_raises_notaggererror_for_unknown_type(self, mock_file):
         with self.assertRaises(tagger.NoTaggerError):
             tagger.get_tagger('ANY_FILE')
+
+
+class TestSetMultipleTags(TestCase):
+
+    def setUp(self):
+        self.patch_get_tagger = mock.patch('usiq.tagger.get_tagger')
+        self.mock_get_tagger = self.patch_get_tagger.start()
+        self.mock_tagger = self.mock_get_tagger.return_value
+
+    def tearDown(self):
+        mock.patch.stopall()
+
+    def test_all_tags_are_set(self):
+        tagger.set_multiple_tags('ANY_FILENAME', {'artist': 'ANY_ARTIST',
+                                                  'title': 'ANY_TITLE'})
+        self.mock_tagger.__setitem__.assert_has_calls([
+            mock.call('artist', 'ANY_ARTIST'),
+            mock.call('title', 'ANY_TITLE')
+        ], any_order=True)
+
+    def test_prefix_is_used(self):
+        tagger.set_multiple_tags('ANY_FILENAME',
+                                 {'--artist': 'THIS', 'artist': 'NOT THIS'},
+                                 prefix='--')
+
+        self.mock_tagger.__setitem__.assert_called_once_with('artist', 'THIS')
+
+    def test_empty_tags_sets_nothing(self):
+        tagger.set_multiple_tags('ANY_FILENAME', {})
+        self.mock_tagger.__setitem__.assert_not_called()
+
+    def test_final_state_is_saved_if_any_tags_changed(self):
+        tagger.set_multiple_tags('ANY_FILENAME', {'artist': 'ANY_ARTIST'})
+        self.mock_tagger.save.assert_called_once_with()
+
+    def test_final_state_is_not_saved_if_no_tags_changed(self):
+        tagger.set_multiple_tags('ANY_FILENAME', {})
+        self.mock_tagger.save.assert_not_called()
+
+    def test_invalid_keys_are_ignored(self):
+        tagger.set_multiple_tags('ANY_FILENAME', {'INVALID_KEY': 'ANY_VALUE'})
+        self.mock_tagger.__setitem__.assert_not_called()

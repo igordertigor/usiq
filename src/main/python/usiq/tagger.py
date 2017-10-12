@@ -89,8 +89,11 @@ def bpm2str(value):
 
 def set_multiple_tags(fname, tags, prefix=''):
     tagger = get_tagger(fname)
+    changed = False
     for key in FIELDS:
-        value = tags[prefix + key]
+        value = tags.get(prefix + key, None)
         if value is not None:
             tagger[key] = value
-    tagger.save()
+            changed = True
+    if changed:
+        tagger.save()
