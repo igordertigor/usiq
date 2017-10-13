@@ -33,6 +33,7 @@ class TestTag(TestCase):
     def test_parsed_tags_take_precedence_over_config(self):
         self.mock_parse_filename.return_value = {'artist': 'ANY_ARTIST'}
         args = {'--dry': False,
+                '--import': None,
                 '--artist': 'NOT_ARTIST',
                 '--pattern': '<artist>'}
 
@@ -47,6 +48,7 @@ class TestTag(TestCase):
     def test_no_default_tag_set_but_value_parsed_from_fname(self):
         self.mock_parse_filename.return_value = {'artist': 'ANY_ARTIST'}
         args = {'--dry': False,
+                '--import': None,
                 '--artist': None,
                 '--pattern': '<artist>'}
 
@@ -61,6 +63,7 @@ class TestTag(TestCase):
     def test_neither_default_tag_nor_parsed_doesnt_touch_tag(self):
         self.mock_parse_filename.return_value = {}
         args = {'--dry': False,
+                '--import': None,
                 '--artist': None,
                 '--pattern': 'ANY_PATTERN'}
 
@@ -74,7 +77,7 @@ class TestTag(TestCase):
 
     def test_dry_run_doesnt_set_tags(self):
         self.mock_parse_filename.return_value = {'artist': 'ANY_ARTIST'}
-        args = {'--dry': True, '--pattern': 'ANY_PATTERN'}
+        args = {'--dry': True, '--import': None, '--pattern': 'ANY_PATTERN'}
 
         cli.tag(['ANY_FILENAME.mp3'], args)
 
@@ -82,7 +85,7 @@ class TestTag(TestCase):
 
     def test_multiple_filenames(self):
         self.mock_parse_filename.return_value = {'artist': 'ANY_ARTIST'}
-        args = {'--dry': False, '--pattern': 'ANY_PATTERN'}
+        args = {'--dry': False, '--import': None, '--pattern': 'ANY_PATTERN'}
 
         cli.tag(['FIRST_FILE.mp3', 'SECOND_FILE.flac'], args)
 
@@ -104,6 +107,7 @@ class TestTag(TestCase):
             self.mock_parse_filename.return_value = {}
             cli.tag(['ANY_FILENAME.mp3'],
                     {'--artist': 'ANY_ARTIST',
+                     '--import': None,
                      '--dry': True,
                      '--pattern': 'ANY_PATTERN'})
             should_log = ("Setting tags {'artist': 'ANY_ARTIST'}"
@@ -115,11 +119,82 @@ class TestTag(TestCase):
             self.mock_parse_filename.return_value = {}
             cli.tag(['ANY_FILENAME.mp3'],
                     {'--artist': 'ANY_ARTIST',
+                     '--import': None,
                      '--dry': False,
                      '--pattern': 'ANY_PATTERN'})
             should_log = ("Setting tags {'artist': 'ANY_ARTIST'}"
                           " on file ANY_FILENAME.mp3")
             self.assertIn(should_log, log_handler.formatted_records[0])
+
+    def test_no_pattern_no_parsing(self):
+        cli.tag(['ANY_FILENAME.mp3'],
+                {'--artist': 'ANY_ARTIST',
+                 '--import': None,
+                 '--dry': False,
+                 '--pattern': None})
+        self.mock_parse_filename.assert_not_called()
+        self.mock_set_tags.assert_called_once_with('ANY_FILENAME.mp3',
+                                                   {'artist': 'ANY_ARTIST'},
+                                                   prefix='')
+
+    @mock.patch('os.path.abspath')
+    @mock.patch('usiq.cli.open')
+    @mock.patch('yaml.load')
+    def test_tags_are_read_from_yaml_file(self,
+                                          mock_load,
+                                          mock_open,
+                                          mock_abspath):
+        mock_load.return_value = {'ANY_FILENAME.mp3': {'artist': 'ANY_ARTIST'}}
+        mock_abspath.side_effect = lambda fname: fname
+        cli.tag(['ANY_FILENAME.mp3'],
+                {'--import': 'ANY_YAML',
+                 '--dry': False,
+                 '--pattern': None})
+        mock_load.assert_called_once_with(
+            mock_open.return_value.__enter__.return_value)
+        self.mock_set_tags.assert_called_once_with('ANY_FILENAME.mp3',
+                                                   {'artist': 'ANY_ARTIST'},
+                                                   prefix='')
+
+    @mock.patch('os.path.abspath')
+    @mock.patch('usiq.cli.open')
+    @mock.patch('yaml.load')
+    def test_pattern_takes_precedence_over_yaml(self,
+                                                mock_load,
+                                                mock_open,
+                                                mock_abspath):
+        mock_load.return_value = {'FILENAME_ARTIST.mp3':
+                                  {'artist': 'ANY_ARTIST'}}
+        mock_abspath.side_effect = lambda fname: fname
+        self.mock_parse_filename.return_value = {'artist': 'FILENAME_ARTIST'}
+        cli.tag(['FILENAME_ARTIST.mp3'],
+                {'--import': 'ANY_YAML',
+                 '--dry': False,
+                 '--pattern': '<artist>'})
+        self.mock_set_tags.assert_called_once_with(
+            'FILENAME_ARTIST.mp3',
+            {'artist': 'FILENAME_ARTIST'},
+            prefix='')
+
+    @mock.patch('os.path.abspath')
+    @mock.patch('usiq.cli.open')
+    @mock.patch('yaml.load')
+    def test_arguments_take_precendece_over_yaml(self,
+                                                 mock_load,
+                                                 mock_open,
+                                                 mock_abspath):
+        mock_load.return_value = {'ANY_FILE.mp3':
+                                  {'artist': 'ANY_ARTIST'}}
+        mock_abspath.side_effect = lambda fname: fname
+        cli.tag(['ANY_FILE.mp3'],
+                {'--import': 'ANY_YAML',
+                 '--dry': False,
+                 '--pattern': None,
+                 '--artist': 'OTHER ARTIST'})
+        self.mock_set_tags.assert_called_once_with(
+            'ANY_FILE.mp3',
+            {'artist': 'OTHER ARTIST'},
+            prefix='')
 
 
 class TestRename(TestCase):

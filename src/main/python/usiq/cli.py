@@ -17,9 +17,20 @@ def tag(fnames, args):
     default_tags = {key: args['--' + key]
                     for key in tagger.FIELDS
                     if '--' + key in args and args['--' + key] is not None}
+
+    if args['--import']:
+        with open(args['--import']) as f:
+            filetags = yaml.load(f)
+    else:
+        filetags = {}
+
     for fname in fnames:
-        tags = default_tags.copy()
-        tags.update(parser.parse_filename(fname, args['--pattern']))
+        abs_fname = os.path.abspath(fname)
+        tags = filetags[abs_fname] if abs_fname in filetags else {}
+        tags.update(default_tags.copy())
+        if args['--pattern']:
+            tags.update(parser.parse_filename(fname, args['--pattern']))
+
         info('Setting tags {} on file {}'.format(tags, fname))
         if not args['--dry']:
             tagger.set_multiple_tags(fname, tags, prefix='')
