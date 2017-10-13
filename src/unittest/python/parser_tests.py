@@ -86,3 +86,10 @@ class TestConstructRegexp(TestCase):
         self.assertSetEqual(set(parsed.keys()), {'artist', 'title'})
         self.assertEqual(parsed['artist'], 'any_artist')
         self.assertEqual(parsed['title'], 'any_title')
+
+    def test_wildcard(self):
+        regexp = parser.construct_regexp('<__any__>_-_<title>')
+        parsed = re.search(regexp,
+                           '/path/to/any_non-sense_-_any_title').groupdict()
+        self.assertSetEqual(set(parsed.keys()), {'title'})
+        self.assertEqual(parsed['title'], 'any_title')

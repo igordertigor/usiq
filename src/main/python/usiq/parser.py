@@ -16,6 +16,7 @@ def parse_filename(fname, pattern):
 def construct_regexp(pattern):
     fields = get_fields(pattern)
     regexp = pattern.replace('(', r'\(').replace(')', r'\)')
+    regexp = regexp.replace('<__any__>', '[^/]+')
     number_fields = {'bpm', 'year', 'tracknumber'}
     complex_fields = number_fields | {'key'}
     simple_fields = list(fields - complex_fields)
