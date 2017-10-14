@@ -16,6 +16,7 @@ Options:
         [default: tags.yaml]
     -i <FILE>, --import=<FILE>
         import tags from yaml file
+
 Tag related:
     -t <TITLE>, --title=<TITLE>
     -a <ARTIST>, --artist=<ARTIST>
@@ -32,8 +33,10 @@ from logbook import StreamHandler
 
 from usiq import cli
 
-# TODO: write tags as yaml, edit, read tags from yaml
-# TODO: support silent tag matching (e.g. "<*>_-_<title>")
+# TODO: Examples in docstring
+# TODO: Support - for -i and -o
+# TODO: Github & Travis
+# TODO: Fortmat options for tags (e.g. title, lower, upper)
 # TODO: support singleton pattern to not clear album name
 
 
