@@ -55,7 +55,6 @@ from logbook import StreamHandler
 from usiq import cli
 
 # TODO: Examples in docstring
-# TODO: allow - for import and export
 # TODO: Format options for tags (e.g. title, lower, upper)
 # TODO: support singleton pattern to not clear album name
 
