@@ -202,11 +202,14 @@ class TestRename(TestCase):
     def setUp(self):
         self.patch_rename = mock.patch('os.rename')
         self.patch_get_tagger = mock.patch('usiq.tagger.get_tagger')
+        self.patch_path_exists = mock.patch('os.path.exists')
         self.mock_rename = self.patch_rename.start()
         self.mock_get_tagger = self.patch_get_tagger.start()
+        self.mock_path_exists = self.patch_path_exists.start()
         self.mock_get_tagger.return_value = {'artist': 'ANY_ARTIST',
                                              'title': 'ANY_TITLE',
                                              'bpm': '101'}
+        self.mock_path_exists.return_value = False
 
     def tearDown(self):
         mock.patch.stopall()
@@ -258,6 +261,17 @@ class TestRename(TestCase):
         with self.assertRaises(cli.UsiqError):
             cli.rename(['ANY_FILE.mp3'],
                        {'--dry': False, '--pattern': '<artist>.mp3'})
+
+    def test_does_not_move_to_existing_file(self):
+        self.mock_path_exists.return_value = True
+        with logbook.TestHandler() as log_handler:
+            cli.rename(['ANY_FILE.mp3'],
+                       {'--dry': False, '--pattern': '<artist>'})
+            should_log = ("Not moving ANY_FILE.mp3 -> ANY_ARTIST.mp3,"
+                          " target file exists!")
+            self.assertIn(should_log, log_handler.formatted_records[0])
+
+        self.mock_rename.assert_not_called()
 
 
 class TestExport(TestCase):

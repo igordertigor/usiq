@@ -1,6 +1,6 @@
 import os
 import yaml
-from logbook import info
+from logbook import info, warning
 
 from usiq import tagger, parser, renamer
 
@@ -46,6 +46,11 @@ def rename(fnames, args):
         new_fname = renamer.create_filename(tags, pattern)
         _, extension = os.path.splitext(fname)
         new_fname += extension
+        target_exists = os.path.exists(new_fname)
+        if target_exists:
+            warning('Not moving {} -> {}, target file exists!'
+                    .format(fname, new_fname))
+            continue
         info('Moving {} -> {}'.format(fname, new_fname))
         if not args['--dry']:
             os.rename(fname, new_fname)
