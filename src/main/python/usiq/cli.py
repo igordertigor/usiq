@@ -1,5 +1,7 @@
 import os
+import sys
 import yaml
+from contextlib import contextmanager
 from logbook import info, warning
 
 from usiq import tagger, parser, renamer
@@ -19,7 +21,7 @@ def tag(fnames, args):
                     if '--' + key in args and args['--' + key] is not None}
 
     if args['--import']:
-        with open(args['--import']) as f:
+        with open_file_or_stdinout(args['--import']) as f:
             filetags = yaml.load(f)
     else:
         filetags = {}
@@ -58,7 +60,7 @@ def rename(fnames, args):
 
 def export(fnames, args):
     outfile = args['--output']
-    with open(outfile, 'w') as f:
+    with open_file_or_stdinout(outfile, 'w') as f:
         yaml.dump({os.path.abspath(fname): tagger.get_tagger(fname).todict()
                    for fname in fnames},
                   f,
@@ -77,3 +79,18 @@ def with_config(args):
         cfg = yaml.load(f)
     cfg.update(args)
     return cfg
+
+
+@contextmanager
+def open_file_or_stdinout(fname, mode='r', **kwargs):
+    if fname == '-':
+        if 'r' in mode:
+            yield sys.stdin
+        elif 'w' in mode or 'a' in mode:
+            yield sys.stdout
+        else:
+            yield sys.stdin
+    else:
+        f = open(fname, mode, **kwargs)
+        yield f
+        f.close()

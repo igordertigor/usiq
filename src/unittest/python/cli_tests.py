@@ -150,8 +150,7 @@ class TestTag(TestCase):
                 {'--import': 'ANY_YAML',
                  '--dry': False,
                  '--pattern': None})
-        mock_load.assert_called_once_with(
-            mock_open.return_value.__enter__.return_value)
+        mock_load.assert_called_once_with(mock_open.return_value)
         self.mock_set_tags.assert_called_once_with('ANY_FILENAME.mp3',
                                                    {'artist': 'ANY_ARTIST'},
                                                    prefix='')
@@ -277,7 +276,7 @@ class TestRename(TestCase):
 class TestExport(TestCase):
 
     @mock.patch('os.path.abspath', side_effect=lambda fn: '/abs/' + fn)
-    @mock.patch('builtins.open')
+    @mock.patch('usiq.cli.open_file_or_stdinout')
     @mock.patch('usiq.tagger.get_tagger')
     def test_happy_path(self, mock_get_tagger, mock_open, mock_abspath):
         fake_open_file = StringIO()
