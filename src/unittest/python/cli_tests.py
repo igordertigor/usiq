@@ -138,7 +138,7 @@ class TestTag(TestCase):
                                                    prefix='')
 
     @mock.patch('os.path.abspath')
-    @mock.patch('usiq.cli.open')
+    @mock.patch('builtins.open')
     @mock.patch('yaml.load')
     def test_tags_are_read_from_yaml_file(self,
                                           mock_load,
@@ -157,7 +157,7 @@ class TestTag(TestCase):
                                                    prefix='')
 
     @mock.patch('os.path.abspath')
-    @mock.patch('usiq.cli.open')
+    @mock.patch('builtins.open')
     @mock.patch('yaml.load')
     def test_pattern_takes_precedence_over_yaml(self,
                                                 mock_load,
@@ -177,7 +177,7 @@ class TestTag(TestCase):
             prefix='')
 
     @mock.patch('os.path.abspath')
-    @mock.patch('usiq.cli.open')
+    @mock.patch('builtins.open')
     @mock.patch('yaml.load')
     def test_arguments_take_precendece_over_yaml(self,
                                                  mock_load,
@@ -263,7 +263,7 @@ class TestRename(TestCase):
 class TestExport(TestCase):
 
     @mock.patch('os.path.abspath', side_effect=lambda fn: '/abs/' + fn)
-    @mock.patch('usiq.cli.open')
+    @mock.patch('builtins.open')
     @mock.patch('usiq.tagger.get_tagger')
     def test_happy_path(self, mock_get_tagger, mock_open, mock_abspath):
         fake_open_file = StringIO()
