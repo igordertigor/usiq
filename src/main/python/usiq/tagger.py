@@ -44,7 +44,12 @@ class Mp3Tagger(Tagger):
     supported_extensions = ('.mp3',)
 
     def __getitem__(self, key):
-        return self.tags[self.translate_key(key)].text[0]
+        try:
+            return self.tags[tkey].text[0]
+        except KeyError:
+            # This should not happen for correcly formatted tags, but it seems
+            # to happen for some files
+            return None
 
     def __setitem__(self, key, value):
         self.tags[self.translate_key(key)].text = [value]
