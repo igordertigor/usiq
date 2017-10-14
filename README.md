@@ -22,6 +22,9 @@ something else (for example I started moving from beets to developing usiq
 when I discovered [cmus](https://cmus.github.io/), which to me seems like
 the best music player ever developed (if your tags are in order).
 
+Note that usiq is currently under heavy development and a lot of features
+may be quite unstable.
+
 ## Installation
 
 Should be as easy as
