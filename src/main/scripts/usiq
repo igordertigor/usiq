@@ -1,18 +1,25 @@
 #!/usr/bin/env python
 """
+Synchronize tags and filenames
+
 Usage:
     usiq [options] show <FILE>
-        Show tags of a given file
     usiq [options] tag <FILE> ...
-        Set tags on one or more files. Tags can be set through options, can be
-        parsed from the filename or can be imported from a yaml file.
     usiq [options] rename <FILE> ...
-        Rename on or more files according to their tags. This requires that
+    usiq [options] export <FILE> ...
+
+
+Usiq uses action arguments to control its behaviour. Valid actions are
+specifically:
+    show: Show the tags of a particular filename
+    tag: Set tags on one or more files. Tags can be set through options, can be
+        parsed from the filename or can be imported from a yaml file.
+    rename: Rename on or more files according to their tags. This requires that
         you specify a filename pattern that specifies how tags are used to
         build the respective filename.
-    usiq [options] export <FILE> ...
-        Export the current tags to a yaml file. This can be useful if the tags
-        should be modified and read in again.
+    export: Export the current tags of one or more files to a yaml file. This
+        can be useful if the tags should be modified and read in again.
+
 
 Options:
     -d, --dry
