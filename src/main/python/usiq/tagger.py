@@ -45,7 +45,7 @@ class Mp3Tagger(Tagger):
 
     def __getitem__(self, key):
         try:
-            return self.tags[tkey].text[0]
+            return self.tags[self.translate_key(key)].text[0]
         except KeyError:
             # This should not happen for correcly formatted tags, but it seems
             # to happen for some files
