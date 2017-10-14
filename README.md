@@ -49,3 +49,25 @@ cases. So
     usiq show <FILENAME>
 
 would for example show the tags for a given file.
+
+## Usage examples
+
+
+### Rename mp3 files to match tags
+
+This example assumes that you have a couple of mp3 files lying around that
+you want to move to a location based on their tags
+
+    usiq --pattern="$HOME/Music/<albumartist>/<album>/<artist>_-_<title>" rename *.mp3
+
+### Interactive editing of files in the current folder
+
+This exports the tags from the current folder to a yaml file, opens your
+configured editor on the yaml file and when you close, it uses the yaml
+file to change the tags of all selected files
+
+    usiq -o - export *.mp3 | vipe - | usiq -i - tag *.mp3
+
+Note that this example makes use of
+[vipe](https://github.com/juliangruber/vipe/blob/master/vipe.sh) for
+interactive stream editing.
