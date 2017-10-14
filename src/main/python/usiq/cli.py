@@ -70,3 +70,10 @@ def illegal_pattern(pattern):
     _, extension = os.path.splitext(pattern)
     has_extension = extension.lower() in ['.mp3', '.flac', '.ogg', '.m4a']
     return constant or has_extension
+
+
+def with_config(args):
+    with open(args['--config']) as f:
+        cfg = yaml.load(f)
+    cfg.update(args)
+    return cfg

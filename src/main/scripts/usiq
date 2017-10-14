@@ -35,6 +35,8 @@ Options:
         [default: tags.yaml]
     -i <FILE>, --import=<FILE>
         import tags from yaml file
+    -c <RCFILE>, --config=<RCFILE>
+        configuration file [default: $HOME/.config/usiq/usiqrc]
 
 Tag related:
     -t <TITLE>, --title=<TITLE>
@@ -62,7 +64,7 @@ from usiq import cli
 
 if __name__ == '__main__':
     StreamHandler(sys.stdout).push_application()
-    args = docopt(__doc__)
+    args = cli.with_config(docopt(__doc__))
 
     fnames = args.pop('<FILE>')
     if args['show']:

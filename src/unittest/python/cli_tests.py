@@ -300,3 +300,19 @@ class TestExport(TestCase):
         mock_abspath.assert_has_calls([mock.call('FIRST_FILE.mp3'),
                                        mock.call('SECOND_FILE.flac')],
                                       any_order=True)
+
+
+class TestConfig(TestCase):
+
+    @mock.patch('builtins.open')
+    @mock.patch('yaml.load')
+    def test_with_config(self, mock_load, mock_open):
+        mock_load.return_value = {'--artist': 'ANY_ARTIST',
+                                  '--pattern': '<title>'}
+        args = cli.with_config({'--artist': 'ANY_OTHER_ARTIST',
+                                '--config': 'ANY_CONFIG_FILE'})
+        self.assertDictEqual(args, {'--artist': 'ANY_OTHER_ARTIST',
+                                    '--config': 'ANY_CONFIG_FILE',
+                                    '--pattern': '<title>'})
+        mock_load.assert_has_calls([mock.call(mock_open().__enter__())])
+        mock_open.assert_has_calls([mock.call('ANY_CONFIG_FILE')])
