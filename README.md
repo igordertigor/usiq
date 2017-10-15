@@ -60,6 +60,11 @@ you want to move to a location based on their tags
 
     usiq --pattern="$HOME/Music/<albumartist>/<album>/<artist>_-_<title>" rename *.mp3
 
+You can add formatting for filenames (e.g. if you for example your target
+filesystem is not case sensitive) by using format specifiers
+
+    usiq --pattern="<artist.upper>_-_<title.upper>" rename *.mp3
+
 ### Interactive editing of files in the current folder
 
 This exports the tags from the current folder to a yaml file, opens your
