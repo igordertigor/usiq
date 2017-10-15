@@ -75,8 +75,11 @@ def illegal_pattern(pattern):
 
 
 def with_config(args):
-    with open(args['--config']) as f:
-        cfg = yaml.load(f)
+    if os.path.exists(args['--config']):
+        with open(args['--config']) as f:
+            cfg = yaml.load(f)
+    else:
+        cfg = {}
     cfg.update(args)
     return cfg
 
