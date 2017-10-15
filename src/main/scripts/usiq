@@ -29,7 +29,9 @@ Options:
         will be specify filenames that only consist of a song title followed by
         an extension (e.g. "Yellow Submarine.mp3", "Yellow Submarine.flac", ...
         will all be parsed as songs with the title "Yellow Submarine") nothing
-        is assumed about other tags.
+        is assumed about other tags. You may use formatters such as
+        "<title.lower>" to request special formatting of filenames. This is
+        only supported for renaming.
     -o <FILE>, --output=<FILE>
         write output to yaml file <FILE> (only with export action)
         [default: tags.yaml]
