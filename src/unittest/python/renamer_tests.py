@@ -16,3 +16,8 @@ class TestCreateFilename(TestCase):
         fname = renamer.create_filename({}, '~/ANY_FILE')
         mock_expanduser.assert_called_once_with('~/ANY_FILE')
         self.assertEqual(fname, '/home/tester/ANY_FILE')
+
+    def test_support_formatted_fields(self):
+        tags = {'title': 'ANY TITLE', 'artist': 'ANY ARTIST'}
+        fname = renamer.create_filename(tags, '<artist.title> - <title.lower>')
+        self.assertEqual(fname, 'Any Artist - any title')
