@@ -14,7 +14,7 @@ def parse_filename(fname, pattern):
 
 
 def construct_regexp(pattern):
-    fields = get_fields(pattern)
+    fields = set(get_fields(pattern))
     regexp = pattern.replace('(', r'\(').replace(')', r'\)')
     regexp = regexp.replace('<__any__>', '[^/]+')
     number_fields = {'bpm', 'year', 'tracknumber'}
@@ -35,4 +35,9 @@ def construct_regexp(pattern):
 
 
 def get_fields(pattern):
-    return set(re.findall(r'<(.*?)>', pattern)).intersection(set(FIELDS))
+    fields = {(field.split('.')[0],
+               field.split('.')[1] if len(field.split('.')) == 2 else None)
+              for field in re.findall(r'<(.*?)>', pattern)}
+    return {field: formatter
+            for field, formatter in fields
+            if field in FIELDS}

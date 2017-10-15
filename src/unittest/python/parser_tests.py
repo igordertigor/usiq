@@ -93,3 +93,15 @@ class TestConstructRegexp(TestCase):
                            '/path/to/any_non-sense_-_any_title').groupdict()
         self.assertSetEqual(set(parsed.keys()), {'title'})
         self.assertEqual(parsed['title'], 'any_title')
+
+
+class TestGetFields(TestCase):
+
+    def test_simple_get_fields(self):
+        fields = parser.get_fields('<artist>_<title>_<bpm>')
+        self.assertSetEqual(set(fields), {'artist', 'title', 'bpm'})
+
+    def test_formatted_fields(self):
+        fields = parser.get_fields('<artist.lower>_<title>')
+        self.assertDictEqual(fields, {'artist': 'lower',
+                                      'title': None})
