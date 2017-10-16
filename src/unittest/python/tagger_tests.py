@@ -1,5 +1,6 @@
 from unittest import TestCase, mock
 import logbook
+from mutagen import id3
 
 from usiq import tagger
 
@@ -69,19 +70,28 @@ class TestMp3Tagger(TestCase):
         t = tagger.Mp3Tagger('ANY_FILE')
         t['title'] = 'ANY_TITLE'
         mock_tags = mock_file.return_value
-        mock_tag = mock_tags.__getitem__.return_value
-        mock_tags.__getitem__.assert_called_once_with('TIT2')
-        self.assertSequenceEqual(mock_tag.text, ['ANY_TITLE'])
+        mock_tags.__setitem__.assert_called_once_with(
+            'TIT2',
+            id3.TIT2(text=['ANY_TITLE']))
 
 
 class TestFlacTagger(TestCase):
 
     @mock.patch('mutagen.File')
-    def test_getitem(self, mock_file):
+    def test_getitem_for_existing_key(self, mock_file):
+        mock_file.return_value.__contains__.return_value = True
         t = tagger.FlacTagger('ANY_FILE')
         t['title']
         mock_tags = mock_file.return_value
         mock_tags['title'].__getitem__.assert_called_once_with(0)
+
+    @mock.patch('mutagen.File')
+    def test_getitem_for_nonexisting_key(self, mock_file):
+        mock_file.return_value.__contains__.return_value = False
+        t = tagger.FlacTagger('ANY_FILE')
+        t['title']
+        mock_tags = mock_file.return_value
+        mock_tags['title'].__getitem__.assert_not_called()
 
     @mock.patch('mutagen.File')
     def test_setitem(self, mock_file):

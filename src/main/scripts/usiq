@@ -56,6 +56,7 @@ from logbook import StreamHandler
 
 from usiq import cli
 
+# TODO: copy instead of rename
 # TODO: Format options for tags (e.g. title, lower, upper) (currently ignored
 #       when parsing but used when renaming)
 # TODO: support singleton pattern to not clear album name
