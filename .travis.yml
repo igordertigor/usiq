@@ -4,11 +4,13 @@ python:
   - '3.5'
   - '3.6'
 install:
+  - apt-get install sox
   - pip install -U pip
   - pip install pybuilder
   - pyb install_dependencies
 script:
   - pyb run_unit_tests -X
+  - pyb run_integration_tests -X
 deploy:
   provider: pypi
   user: ingofruend
