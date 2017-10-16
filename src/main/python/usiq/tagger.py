@@ -1,5 +1,6 @@
 import os
 import mutagen
+import mutagen.id3
 from logbook import warn
 
 
@@ -52,7 +53,8 @@ class Mp3Tagger(Tagger):
             return None
 
     def __setitem__(self, key, value):
-        self.tags[self.translate_key(key)].text = [value]
+        tagname = self.translate_key(key)
+        self.tags[tagname] = getattr(mutagen.id3, tagname)(text=[value])
 
     @staticmethod
     def translate_key(key):
@@ -74,7 +76,10 @@ class FlacTagger(Tagger):
     supported_extensions = ('.flac', '.ogg')
 
     def __getitem__(self, key):
-        return self.tags[key][0]
+        if key in self.tags:
+            return self.tags[key][0]
+        else:
+            return None
 
     def __setitem__(self, key, value):
         self.tags[key] = [value]
