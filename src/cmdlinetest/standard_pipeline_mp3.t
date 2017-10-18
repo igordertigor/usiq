@@ -14,15 +14,17 @@ Change artist using command line option
   .*INFO.*Setting tags {'artist': 'Any Artist'} on file two_notes.mp3 (re)
 
 Rename by pattern
-  $ usiq --pattern="<artist.upper> - <title.upper>" rename *.mp3
-  .*INFO.*Moving one_note.mp3 -> ANY ARTIST - NOTE.mp3 (re)
-  .*INFO.*Moving two_notes.mp3 -> ANY ARTIST - NOTES.mp3 (re)
+  $ usiq --pattern="Test/<artist.upper> - <title.upper>" rename *.mp3
+  .*INFO.*Moving one_note.mp3 -> Test/ANY ARTIST - NOTE.mp3 (re)
+  .*INFO.*Moving two_notes.mp3 -> Test/ANY ARTIST - NOTES.mp3 (re)
 
 Show information
-  $ usiq show "ANY ARTIST - NOTE.mp3"
+  $ usiq show "Test/ANY ARTIST - NOTE.mp3"
   .*INFO.*{.*'artist': 'Any Artist'.*} (re)
 
 Check that ls also gives the right pattern
   $ ls
+  Test
+  $ ls Test/
   ANY ARTIST - NOTE.mp3
   ANY ARTIST - NOTES.mp3

@@ -14,15 +14,17 @@ Change artist using command line option
   .*INFO.*Setting tags {'artist': 'Any Artist'} on file two_notes.flac (re)
 
 Rename by pattern
-  $ usiq --pattern="<artist.upper> - <title.upper>" rename *.flac
-  .*INFO.*Moving one_note.flac -> ANY ARTIST - NOTE.flac (re)
-  .*INFO.*Moving two_notes.flac -> ANY ARTIST - NOTES.flac (re)
+  $ usiq --pattern="Test/<artist.upper> - <title.upper>" rename *.flac
+  .*INFO.*Moving one_note.flac -> Test/ANY ARTIST - NOTE.flac (re)
+  .*INFO.*Moving two_notes.flac -> Test/ANY ARTIST - NOTES.flac (re)
 
 Show information
-  $ usiq show "ANY ARTIST - NOTE.flac"
+  $ usiq show "Test/ANY ARTIST - NOTE.flac"
   .*INFO.*{.*'artist': 'Any Artist'.*} (re)
 
 Check that ls also gives the right pattern
   $ ls
+  Test
+  $ ls Test/
   ANY ARTIST - NOTE.flac
   ANY ARTIST - NOTES.flac
