@@ -57,6 +57,8 @@ from logbook import StreamHandler
 from usiq import cli
 
 # TODO: copy instead of rename
+# TODO: if any key starts with !, it is a command used for parsing. The
+#       filename will be added as the last argument to this.
 # TODO: Format options for tags (e.g. title, lower, upper) (currently ignored
 #       when parsing but used when renaming)
 # TODO: support singleton pattern to not clear album name

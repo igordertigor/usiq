@@ -55,6 +55,7 @@ def rename(fnames, args):
             continue
         info('Moving {} -> {}'.format(fname, new_fname))
         if not args['--dry']:
+            os.makedirs(os.path.dirname(new_fname), exist_ok=True)
             os.rename(fname, new_fname)
 
 

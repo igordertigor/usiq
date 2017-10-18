@@ -202,9 +202,11 @@ class TestRename(TestCase):
         self.patch_rename = mock.patch('os.rename')
         self.patch_get_tagger = mock.patch('usiq.tagger.get_tagger')
         self.patch_path_exists = mock.patch('os.path.exists')
+        self.patch_makedirs = mock.patch('os.makedirs')
         self.mock_rename = self.patch_rename.start()
         self.mock_get_tagger = self.patch_get_tagger.start()
         self.mock_path_exists = self.patch_path_exists.start()
+        self.mock_makedirs = self.patch_makedirs.start()
         self.mock_get_tagger.return_value = {'artist': 'ANY_ARTIST',
                                              'title': 'ANY_TITLE',
                                              'bpm': '101'}
@@ -271,6 +273,16 @@ class TestRename(TestCase):
             self.assertIn(should_log, log_handler.formatted_records[0])
 
         self.mock_rename.assert_not_called()
+
+    def test_creates_directory_if_non_existent(self):
+        self.mock_path_exists.side_effect = lambda x: (not x ==
+                                                       'ANY_FOLDER/ANY_ARTIST'
+                                                       '.mp3')
+        cli.rename(['ANY_FILE.mp3'],
+                   {'--dry': False, '--pattern': 'ANY_FOLDER/<artist>'})
+        self.mock_makedirs.assert_called_once_with('ANY_FOLDER', exist_ok=True)
+        self.mock_rename.assert_called_once_with('ANY_FILE.mp3',
+                                                 'ANY_FOLDER/ANY_ARTIST.mp3')
 
 
 class TestExport(TestCase):
