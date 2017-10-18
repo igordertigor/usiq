@@ -203,13 +203,18 @@ class TestRename(TestCase):
         self.patch_get_tagger = mock.patch('usiq.tagger.get_tagger')
         self.patch_path_exists = mock.patch('os.path.exists')
         self.patch_makedirs = mock.patch('os.makedirs')
+        self.patch_expanduser = mock.patch('os.path.expanduser')
+
         self.mock_rename = self.patch_rename.start()
         self.mock_get_tagger = self.patch_get_tagger.start()
         self.mock_path_exists = self.patch_path_exists.start()
         self.mock_makedirs = self.patch_makedirs.start()
+        self.mock_expanduser = self.patch_expanduser.start()
+
         self.mock_get_tagger.return_value = {'artist': 'ANY_ARTIST',
                                              'title': 'ANY_TITLE',
                                              'bpm': '101'}
+        self.mock_expanduser.side_effect = lambda x: x
         self.mock_path_exists.return_value = False
 
     def tearDown(self):
@@ -283,6 +288,13 @@ class TestRename(TestCase):
         self.mock_makedirs.assert_called_once_with('ANY_FOLDER', exist_ok=True)
         self.mock_rename.assert_called_once_with('ANY_FILE.mp3',
                                                  'ANY_FOLDER/ANY_ARTIST.mp3')
+
+    def test_rename_expands_username(self):
+        self.mock_path_exists.return_value = False
+        cli.rename(['ANY_FILE.mp3'],
+                   {'--dry': False, '--pattern': '<artist>'})
+        print(self.mock_expanduser.mock_calls)
+        self.mock_expanduser.assert_called_once_with('ANY_ARTIST.mp3')
 
 
 class TestExport(TestCase):

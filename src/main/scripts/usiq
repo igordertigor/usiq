@@ -38,7 +38,7 @@ Options:
     -i <FILE>, --import=<FILE>
         import tags from yaml file
     -c <RCFILE>, --config=<RCFILE>
-        configuration file [default: $HOME/.config/usiq/usiqrc]
+        configuration file [default: ~/.config/usiq/usiqrc]
 
 Tag related:
     -t <TITLE>, --title=<TITLE>
