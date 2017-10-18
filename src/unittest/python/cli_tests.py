@@ -341,3 +341,17 @@ class TestConfig(TestCase):
                                     '--config': 'ANY_CONFIG_FILE'})
         mock_load.assert_not_called()
         mock_open.assert_not_called()
+
+    @mock.patch('os.path.exists')
+    @mock.patch('builtins.open')
+    @mock.patch('yaml.load')
+    def test_with_config_does_not_overwrite_with_none(self,
+                                                      mock_load,
+                                                      mock_open,
+                                                      mock_exists):
+        mock_exists.return_value = True
+        mock_load.return_value = {'--artist': 'ANY_ARTIST'}
+        args = cli.with_config({'--artist': None,
+                                '--config': 'ANY_CONFIG_FILE'})
+        self.assertDictEqual(args, {'--artist': 'ANY_ARTIST',
+                                    '--config': 'ANY_CONFIG_FILE'})

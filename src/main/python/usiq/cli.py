@@ -81,7 +81,11 @@ def with_config(args):
             cfg = yaml.load(f)
     else:
         cfg = {}
-    cfg.update(args)
+    for key, value in args.items():
+        if key not in cfg:
+            cfg[key] = value
+        elif value is not None:
+            cfg[key] = value
     return cfg
 
 
