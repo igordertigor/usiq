@@ -294,7 +294,7 @@ class TestRename(TestCase):
         cli.rename(['ANY_FILE.mp3'],
                    {'--dry': False, '--pattern': '<artist>'})
         print(self.mock_expanduser.mock_calls)
-        self.mock_expanduser.assert_called_once_with('ANY_ARTIST.mp3')
+        self.mock_expanduser.assert_called_once_with('ANY_ARTIST')
 
 
 class TestExport(TestCase):

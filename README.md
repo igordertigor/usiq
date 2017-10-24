@@ -76,3 +76,10 @@ file to change the tags of all selected files
 Note that this example makes use of
 [vipe](https://github.com/juliangruber/vipe/blob/master/vipe.sh) for
 interactive stream editing.
+
+## Known issues
+
+- Patterns are not accurately read from config file
+- MP3 is sometimes 2.4 and sometimes 2.3 in an unpredictable manner --
+  need to automatically switch between them (or do both if possible)
+- What's happening with the unit tests?
