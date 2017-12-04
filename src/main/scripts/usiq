@@ -49,6 +49,7 @@ Tag related:
     -k <KEY>, --key=<KEY>
     -g <GENRE>, --genre=<GENRE>
     -y <YEAR>, --year=<YEAR>
+    -n <TRACKNO>, --tracknumber=<TRACKNO>
 """
 import sys
 from docopt import docopt
