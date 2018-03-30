@@ -57,6 +57,12 @@ class Mp3Tagger(Tagger):
         self.tags[tagname] = getattr(mutagen.id3, tagname)(text=[value])
 
     def translate_key(self, key):
+        if self.tags.tags is None:
+            year_key = 'TDRC'
+        elif self.tags.tags.version == (2, 4, 0):
+            year_key = 'TDRC'
+        else:
+            year_key = 'TYER'
         d = {'title': 'TIT2',
              'artist': 'TPE1',
              'album': 'TALB',
@@ -64,7 +70,7 @@ class Mp3Tagger(Tagger):
              'albumartist': 'TPE2',
              'bpm': 'TBPM',
              'tracknumber': 'TRCK',
-             'year': 'TDRC' if self.tags.tags.version == (2, 4, 0) else 'TYER',
+             'year': year_key,
              'key': 'TKEY',
              }
         return d[key]
