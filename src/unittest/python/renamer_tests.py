@@ -45,3 +45,11 @@ class TestFilenames(TestCase):
     def test_parenthesis_and_inch(self):
         valid = renamer.format_filename('any file [7" version].mp3')
         self.assertEqual(valid, 'any file (7in version).mp3')
+
+    def test_and_quotations(self):
+        valid = renamer.format_filename('any "file".mp3')
+        self.assertEqual(valid, 'any file.mp3')
+
+    def test_inch_and_quotations(self):
+        valid = renamer.format_filename('any "file" (7" version).mp3')
+        self.assertEqual(valid, 'any file (7in version).mp3')

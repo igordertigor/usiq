@@ -19,7 +19,34 @@ def create_filename(tags, pattern):
 
 def format_filename(filename):
     filename = filename.replace('[', '(').replace(']', ')')
-    filename = filename.replace('"', 'in')
+    filename = format_quotes(filename)
     valid_chars = '-_.() {}{}'.format(string.ascii_letters, string.digits)
     filename = ''.join(c if c in valid_chars else '_' for c in filename)
     return filename
+
+
+def format_quotes(filename):
+    if '"' not in filename:
+        return filename
+
+    if len([c for c in filename if c == '"']) == 1:
+        return filename.replace('"', 'in')
+
+    output = []
+    last_char = ''
+    open_quote = False
+    for i, c in enumerate(filename):
+        if c == '"':
+            if open_quote:
+                # Assume that we definitely want to close any quote first
+                open_quote = False
+            elif last_char == ' ':
+                # This is almost definitely an opening quote
+                open_quote = True
+            elif last_char.isdigit():
+                # Almost sure to be inches
+                output.append('in')
+        else:
+            output.append(c)
+        last_char = c
+    return ''.join(output)
