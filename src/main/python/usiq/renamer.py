@@ -1,5 +1,6 @@
 import os
 import string
+import unicodedata
 from . import parser
 
 
@@ -18,11 +19,18 @@ def create_filename(tags, pattern):
 
 
 def format_filename(filename):
+    filename = remove_accents(filename)
     filename = filename.replace('[', '(').replace(']', ')')
     filename = format_quotes(filename)
     valid_chars = '-_.() {}{}'.format(string.ascii_letters, string.digits)
     filename = ''.join(c if c in valid_chars else '_' for c in filename)
     return filename
+
+
+def remove_accents(filename):
+    return (unicodedata.normalize('NFKD', filename)
+            .encode('ascii', 'ignore')
+            .decode('utf-8', 'ignore'))
 
 
 def format_quotes(filename):

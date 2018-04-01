@@ -53,3 +53,11 @@ class TestFilenames(TestCase):
     def test_inch_and_quotations(self):
         valid = renamer.format_filename('any "file" (7" version).mp3')
         self.assertEqual(valid, 'any file (7in version).mp3')
+
+    def test_umlauts(self):
+        valid = renamer.format_filename('any "füle".mp3')
+        self.assertEqual(valid, 'any fule.mp3')
+
+    def test_upper_case_umlauts(self):
+        valid = renamer.format_filename('this is ÖMÜR.mp3')
+        self.assertEqual(valid, 'this is OMUR.mp3')
